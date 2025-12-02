@@ -12,45 +12,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id         String   @id @map("_id") @default(auto()) @db.ObjectId
-  email      String   @unique
-  password   String
-  name       String?
-  createdAt  DateTime @default(now())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
   // groups membership stored as array of group ids in Group model for simplicity
 }
 
 model Group {
-  id         String   @id @map("_id") @default(auto()) @db.ObjectId
-  name       String
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
   description String?
-  ownerId    String   @db.ObjectId
-  memberIds  String[] @db.ObjectId
-  createdAt  DateTime @default(now())
+  ownerId     String   @db.ObjectId
+  memberIds   String[] @db.ObjectId
+  createdAt   DateTime @default(now())
+  invites     Invite[]
 }
 
 model Task {
-  id          String   @id @map("_id") @default(auto()) @db.ObjectId
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String?
-  status      String   @default("todo")
+  status      String    @default("todo")
   deadline    DateTime?
-  createdBy   String   @db.ObjectId
-  assigneeId  String?  @db.ObjectId
-  groupId     String?  @db.ObjectId
-  createdAt   DateTime @default(now())
+  createdBy   String    @db.ObjectId
+  assigneeId  String?   @db.ObjectId
+  groupId     String?   @db.ObjectId
+  createdAt   DateTime  @default(now())
 }
 
 model Invite {
-  id         String   @id @map("_id") @default(auto()) @db.ObjectId
-  groupId    String   @db.ObjectId
-  token      String   @unique
-  createdBy  String   @db.ObjectId
-  used       Boolean  @default(false)
-  expiresAt  DateTime?
-  createdAt  DateTime @default(now())
-  group     Group    @relation(fields: [groupId], references: [id])
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  groupId   String    @db.ObjectId
+  token     String    @unique
+  createdBy String    @db.ObjectId
+  used      Boolean   @default(false)
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  group     Group     @relation(fields: [groupId], references: [id])
 }
-
