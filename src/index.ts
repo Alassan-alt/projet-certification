@@ -55,3 +55,11 @@ const port = process.env.PORT || 4000;
 app.listen(port, async () => {
   console.log(`Server listening on ${port}`);
 });
+// Test DB connection
+prisma.$connect().then(() => {
+  console.log("✅ Connected to database");
+}).catch((err) => {
+  console.error("❌ Database connection error:", err);
+});
+
+export default app;
