@@ -13,19 +13,38 @@ dotenv.config();
 const app = express();
 app.use(helmet());
 app.use(express.json());
-app.use(cors({ origin: process.env.CORS_ORIGIN || true }));
-app.use(rateLimit({ windowMs: 1 * 60 * 1000, max: 100 })); // basique
+
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://projet-certification-frontend.vercel.app"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log("❌ CORS blocked origin:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
+
+
+app.use(rateLimit({ windowMs: 1 * 60 * 1000, max: 100 }));
 
 app.get("/", (req, res) => res.json({ ok: true, version: "1.0" }));
-app.get("/test", (req, res) => {
-  res.send("OK");
-});
+app.get("/test", (req, res) => res.send("OK"));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/invites", inviteRoutes);
 app.use("/api/tasks", taskRoutes);
-
 
 app.use((err: any, req: any, res: any, next: any) => {
   console.error(err);
@@ -35,5 +54,4 @@ app.use((err: any, req: any, res: any, next: any) => {
 const port = process.env.PORT || 4000;
 app.listen(port, async () => {
   console.log(`Server listening on ${port}`);
-  
 });
